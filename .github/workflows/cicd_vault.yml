@@ -42,6 +42,6 @@ jobs:
         run: |
           # Use the token obtained from AppRole authentication
           export VAULT_TOKEN=$VAULT_TOKEN
-          SECRET=$(vault kv get -field=my-key secret/my-key)
+          SECRET=$(vault kv get -field=my-key secret/data/my-secret)
           echo "My secret: $SECRET"
 
