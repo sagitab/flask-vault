@@ -33,11 +33,17 @@ jobs:
         run: |
           # Authenticate with Vault using AppRole
           vault write auth/approle/login role_id=$ROLE_ID secret_id=$SECRET_ID
-
-      # Step 4: Access secrets from Vault
-      - name: Access Secrets from Vault
-        run: |
-          # Example: Get a secret
-          export VAULT_ADDR=http://104.154.197.149:8200
           SECRET=$(vault kv get -field=my-key secret/my-key)
           echo "My secret: $SECRET"
+
+      # # Step 4: Access secrets from Vault
+      # - name: Access Secrets from Vault
+      #   env:
+      #     VAULT_ADDR: http://104.154.197.149:8200  # Use the address of your Vault instance
+      #     ROLE_ID: ${{ secrets.VAULT_ROLE_ID }}
+      #     SECRET_ID: ${{ secrets.VAULT_SECRET_ID }}
+      #   run: |
+      #     # Example: Get a secret
+      #     export VAULT_TOKEN=${{ secrets.VAULT_KEY }}
+      #     SECRET=$(vault kv get -field=my-key secret/my-key)
+      #     echo "My secret: $SECRET"
