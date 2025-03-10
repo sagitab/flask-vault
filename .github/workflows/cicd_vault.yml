@@ -43,5 +43,7 @@ jobs:
           # Use the token obtained from AppRole authentication
           export VAULT_TOKEN=$VAULT_TOKEN
           SECRET=$(vault kv get -field=my-key secret/my-secret)
+          SECRET2=$(vault kv get -mount="flask-app" "flask-app")
           echo "My secret: $SECRET"
+          echo "My secret2: $SECRET2"
 
