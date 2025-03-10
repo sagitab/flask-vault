@@ -28,4 +28,19 @@ kubectl apply -f argocd_graf-prom.yml
 argocd app sync monitoring
 kubectl get all -n monitoring
 
+##############
+install vault
+helm repo add hashicorp https://helm.releases.hashicorp.com
+helm repo update
+helm install vault hashicorp/vault --namespace vault
+##init
+kubectl exec -n vault -it vault-0 -- vault operator init
+kubectl exec -n vault -it vault-0 -- vault operator unseal <key>
+kubectl exec -n vault -it vault-0 -- vault secrets enable -path=secret kv
 
+export VAULT_ADDR=http://localhost:8200
+export ROLE_ID=<your-role-id>
+export SECRET_ID=<your-secret-id>
+
+# Authenticate with Vault using AppRole
+vault write auth/approle/login role_id=$ROLE_ID secret_id=$SECRET_ID

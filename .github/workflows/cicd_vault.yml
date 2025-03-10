@@ -1,0 +1,42 @@
+name: Vault CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      # Step 2: Install Vault CLI
+      - name: Install Vault CLI
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y unzip
+          VAULT_VERSION="1.8.0" # Adjust the version as needed
+          wget https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip
+          unzip vault_${VAULT_VERSION}_linux_amd64.zip
+          sudo mv vault /usr/local/bin/
+
+      # Step 3: Set Vault Address and authenticate using AppRole
+      - name: Authenticate with Vault using AppRole
+        env:
+          VAULT_ADDR: http://localhost:8200  # Use the address of your Vault instance
+          ROLE_ID: ${{ secrets.VAULT_ROLE_ID }}
+          SECRET_ID: ${{ secrets.VAULT_SECRET_ID }}
+        run: |
+          # Authenticate with Vault using AppRole
+          vault write auth/approle/login role_id=$ROLE_ID secret_id=$SECRET_ID
+
+      # Step 4: Access secrets from Vault
+      - name: Access Secrets from Vault
+        run: |
+          # Example: Get a secret
+          SECRET=$(vault kv get -field=my-secret secret/my-key)
+          echo "My secret: $SECRET"
