@@ -27,7 +27,7 @@ jobs:
       # Step 3: Set Vault Address and authenticate using AppRole
       - name: Authenticate with Vault using AppRole
         env:
-          VAULT_ADDR: http://localhost:8200  # Use the address of your Vault instance
+          VAULT_ADDR: http://104.154.197.149:8200  # Use the address of your Vault instance
           ROLE_ID: ${{ secrets.VAULT_ROLE_ID }}
           SECRET_ID: ${{ secrets.VAULT_SECRET_ID }}
         run: |
