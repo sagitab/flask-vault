@@ -24,26 +24,24 @@ jobs:
           unzip vault_${VAULT_VERSION}_linux_amd64.zip
           sudo mv vault /usr/local/bin/
 
-      # Step 3: Set Vault Address and authenticate using AppRole
+# Step 3: Set Vault Address and authenticate using AppRole
       - name: Authenticate with Vault using AppRole
         env:
           VAULT_ADDR: http://104.154.197.149:8200  # Use the address of your Vault instance
           ROLE_ID: ${{ secrets.VAULT_ROLE_ID }}
           SECRET_ID: ${{ secrets.VAULT_SECRET_ID }}
         run: |
-          # Authenticate with Vault using AppRole
-          vault write auth/approle/login role_id=$ROLE_ID secret_id=$SECRET_ID
+          # Authenticate with Vault using AppRole and capture the token
+          VAULT_TOKEN=$(vault write -field=token auth/approle/login role_id=$ROLE_ID secret_id=$SECRET_ID)
+          echo "VAULT_TOKEN=$VAULT_TOKEN" >> $GITHUB_ENV  # Set token as an environment variable for use in next steps
+
+      # Step 4: Access secrets from Vault
+      - name: Access Secrets from Vault
+        env:
+          VAULT_ADDR: http://104.154.197.149:8200  # Use the address of your Vault instance
+        run: |
+          # Use the token obtained from AppRole authentication
+          export VAULT_TOKEN=$VAULT_TOKEN
           SECRET=$(vault kv get -field=my-key secret/my-key)
           echo "My secret: $SECRET"
 
-      # # Step 4: Access secrets from Vault
-      # - name: Access Secrets from Vault
-      #   env:
-      #     VAULT_ADDR: http://104.154.197.149:8200  # Use the address of your Vault instance
-      #     ROLE_ID: ${{ secrets.VAULT_ROLE_ID }}
-      #     SECRET_ID: ${{ secrets.VAULT_SECRET_ID }}
-      #   run: |
-      #     # Example: Get a secret
-      #     export VAULT_TOKEN=${{ secrets.VAULT_KEY }}
-      #     SECRET=$(vault kv get -field=my-key secret/my-key)
-      #     echo "My secret: $SECRET"
