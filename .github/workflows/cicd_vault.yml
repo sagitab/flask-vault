@@ -43,7 +43,7 @@ jobs:
           # Use the token obtained from AppRole authentication
           export VAULT_TOKEN=$VAULT_TOKEN
           SECRET=$(vault kv get -field=my-key secret/my-secret)
-          port=$(vault kv get -field=PORT secret/flask)
+          port=$(vault kv get -field=PORT secret/secret/flask)
           echo "My secret: $SECRET"
           echo "My secret2: $port"
 
